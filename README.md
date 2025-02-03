@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/ec559a9f6bfd399b82bb44393651661b08aaf7ba/icons/folder-markdown-open.svg" align="center" width="30%">
+    <img src="https://www.grag.ai/wp-content/uploads/2024/12/GRAG-ICON-TO-WORDLOGO-Animation_Loop-small-ezgif.com-video-to-gif-converter.gif" alt="GRAG Logo" width="400" style="margin-left:'auto' margin-right:'auto' display:'block'"/>
 </p>
 <p align="center"><h1 align="center">GRAG-HESSIANAI-TRAINING-PIPELINE</h1></p>
 <p align="center">
