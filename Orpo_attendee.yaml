@@ -1,0 +1,85 @@
+bind_mounts:
+  - container_path: /pfss/mlde/workspaces/mlde_wsp_P_AvemioAG
+    host_path: /pfss/mlde/workspaces/mlde_wsp_P_AvemioAG
+    propagation: rprivate
+    read_only: false
+  - container_path: /pfss/mlde/users/sp58jogy
+    host_path: /pfss/mlde/users/sp58jogy
+    propagation: rprivate
+    read_only: false
+description: LLAMA_8B_ORPO_attendee
+environment:
+  add_capabilities:
+    - IPC_LOCK
+  drop_capabilities: null
+  environment_variables: {}
+  force_pull_image: false
+  image:
+    cuda: determinedai/genai-train:latest
+  pod_spec: null
+  ports: null
+  proxy_ports: null
+pbs: {}
+resources:
+  devices:
+    - container_path: /dev/infiniband/
+      host_path: /dev/infiniband/
+      mode: mrw
+  resource_pool: 42_Compute
+  slots_per_trial: 64
+  weight: 1
+slurm: {}
+name: LLAMA_8B_ORPO_attendee
+debug: true
+searcher:
+  name: single
+  max_length:
+    batches: 700
+  metric: eval_accuracy
+  smaller_is_better: false
+entrypoint: python -m determined.launch.deepspeed python orpo_finetune.py
+max_restarts: 0
+hyperparameters:
+  model_name: avemio-digital/LLAMA3.1-8B-ORPO-after-SFT-with-16-epochs
+  dataset: avemio-digital/GRAG-ORPO-ShareGPT-Hessian-AI_v4
+  dataset_subsets:
+    - subset: hard-qa-with-multiple-references
+      number_of_samples: 4970
+    #- subset: hard-reasoning-de
+     # number_of_samples: 3190
+    #- subset: hard-reasoning-en
+     # number_of_samples: 1970
+    #- subset: SauerkrautLM-Fermented-GER-DPO
+    #  number_of_samples: 3310
+    #- subset: SauerkrautLM-Fermented-Irrelevance-GER-DPO
+     # number_of_samples: 2000
+    #- subset: multi-turn-qa
+     # number_of_samples: 3200
+    - subset: qa-meeting-topic
+      number_of_samples: 9400
+    - subset: qa-meeting-attendee-topic
+      number_of_samples: 9400
+  training_args:
+    output_dir: pfss/mlde/workspaces/mlde_wsp_P_AvemioAG/soumya_test/output
+    max_steps: 700
+    beta: 0.15
+    per_device_train_batch_size: 1
+    per_device_eval_batch_size: 1
+    max_length: 32000
+  #  max_prompt_length : 16000
+  #  max_completion_length : 16000
+    bf16: true
+    bf16_full_eval: true
+    evaluation_strategy: "steps"
+    eval_steps: 200
+    logging_strategy: "steps"
+    logging_steps: 32
+    save_strategy: "steps"
+    save_steps: 200
+    learning_rate: 5e-7
+    gradient_accumulation_steps: 8
+    gradient_checkpointing: true
+    deepspeed: "ds_configs/ds_config_stage_2.json"
+    warmup_ratio: 0.1
+    lr_scheduler_type: "cosine"
+    optim: "adamw_torch"

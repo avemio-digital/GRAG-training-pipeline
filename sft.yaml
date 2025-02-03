@@ -1,0 +1,96 @@
+bind_mounts:
+  - container_path: /pfss/mlde/workspaces/mlde_wsp_P_AvemioAG
+    host_path: /pfss/mlde/workspaces/mlde_wsp_P_AvemioAG
+    propagation: rprivate
+    read_only: false
+  - container_path: /pfss/mlde/users/sp58jogy
+    host_path: /pfss/mlde/users/sp58jogy
+    propagation: rprivate
+    read_only: false
+description: phi3.5mini_sft_with_CPT
+environment:
+  add_capabilities:
+    - IPC_LOCK
+  drop_capabilities: null
+  environment_variables: {}
+  force_pull_image: true
+  image:
+    cuda: determinedai/genai-train:latest
+  pod_spec: null
+  ports: null
+  proxy_ports: null
+pbs: {}
+resources:
+  devices:
+    - container_path: /dev/infiniband/
+      host_path: /dev/infiniband/
+      mode: mrw
+  resource_pool: 42_Compute
+  slots_per_trial: 4
+  weight: 1
+slurm: {}
+name: phi3.5mini_sft_with_CPT
+debug: true
+searcher:
+  name: single
+  max_length:
+    batches: 20000
+  metric: eval_accuracy
+  smaller_is_better: false
+entrypoint: python -m determined.launch.deepspeed python sft_finetune.py
+max_restarts: 0
+hyperparameters:
+  model: avemio-digital/Phi3.5_Mini_Instruct_2epochs_CPT_fulldata_4slots_16k_contextlength
+  dataset: avemio-digital/GRAG-SFT-ShareGPT-Hessian-AI
+  dataset_subsets:
+    - subset: classification-json
+      number_of_samples: 23100
+    - subset: qa-with-multiple-references
+      number_of_samples: 13700
+    - subset: qa-without-timedifference
+      number_of_samples: 136000
+    - subset: qa-with-timedifference
+      number_of_samples: 136000
+    - subset: extended_function-calling-xlam-en
+      number_of_samples: 46400
+    - subset: extraction-recall
+      number_of_samples: 111000
+    - subset: ocr-correction
+      number_of_samples: 67500
+    - subset: questions
+      number_of_samples: 97300
+    - subset: reasoning
+      number_of_samples: 200000
+    - subset: relevant-context
+      number_of_samples: 98100
+    - subset: summarizations
+      number_of_samples: 39600
+  max_seq_length: 16000
+  data_collator:
+    on_completions_only: false
+    response_template: |
+      <|im_start|>assistant
+  chat_tokens:
+    add_chat_tokens: true
+    special_tokens:
+      - <|im_start|>
+      - <|im_end|>
+  training_args:
+    output_dir: /pfss/mlde/workspaces/mlde_wsp_P_AvemioAG/soumya_test/output
+    max_steps: 20000
+    per_device_train_batch_size: 1  
+    per_device_eval_batch_size: 1
+    bf16: true  # Enable mixed precision
+    evaluation_strategy: steps
+    eval_steps: 2000
+    logging_strategy: steps
+    logging_steps: 10
+    save_strategy: epoch
+    save_steps: 1
+    learning_rate: 0.00001
+    gradient_accumulation_steps: 8
+    deepspeed: ds_configs/ds_config_stage_2.json
+    warmup_ratio: 0.1
+    seed: 43
+    lr_scheduler_type: "cosine"
+    gradient_checkpointing: true

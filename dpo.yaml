@@ -1,0 +1,94 @@
+bind_mounts:
+  - container_path: /pfss/mlde/workspaces/mlde_wsp_P_AvemioAG
+    host_path: /pfss/mlde/workspaces/mlde_wsp_P_AvemioAG
+    propagation: rprivate
+    read_only: false
+  - container_path: /pfss/mlde/users/sp58jogy
+    host_path: /pfss/mlde/users/sp58jogy
+    propagation: rprivate
+    read_only: false
+description: phi3.5mini_sft_with_CPT
+environment:
+  add_capabilities:
+    - IPC_LOCK
+  drop_capabilities: null
+  environment_variables: {}
+  force_pull_image: true
+  image:
+    cuda: determinedai/genai-train:latest
+  pod_spec: null
+  ports: null
+  proxy_ports: null
+pbs: {}
+resources:
+  devices:
+    - container_path: /dev/infiniband/
+      host_path: /dev/infiniband/
+      mode: mrw
+  resource_pool: 42_Compute
+  slots_per_trial: 8
+  weight: 1
+slurm: {}
+name: phi3.5mini_dpo_after_sftcpt
+debug: true
+searcher:
+  name: single
+  max_length:
+    batches: 9200
+  metric: eval_accuracy
+  smaller_is_better: false
+entrypoint: python -m determined.launch.deepspeed python dpo_finetune.py
+max_restarts: 0
+hyperparameters:
+  model_name: "avemio-digital/Phi3.5B-epoch_1_SFTfromCPT_slot_4_16k"
+  # model_ckpt: "6b6fbaa7-faa9-4449-867b-2939a147a335"
+  dataset: avemio-digital/GRAG-DPO-ShareGPT-Hessian-AI
+  dataset_subsets:
+    - subset: qa-with-multiple-references
+      number_of_samples: 24300
+    - subset: qa-without-timedifference
+      number_of_samples: 136000
+    - subset: qa-with-timedifference
+      number_of_samples: 136000
+    - subset: extraction-recall
+      number_of_samples: 100000
+    - subset: questions
+      number_of_samples: 97900
+    - subset: relevant-context
+      number_of_samples: 97500
+  dpo_beta:
+    type: categorical
+    vals:
+      - 0.1
+      - 0.05
+      - 0.01
+  dpo_loss: "sigmoid"
+  max_length: 16000
+  max_prompt_length: 2048
+  max_target_length: 2048
+  precompute_ref_log_probs: true
+  training_args:
+    output_dir: "/pfss/mlde/workspaces/mlde_wsp_P_AvemioAG/soumya_test/output"
+    max_steps: 9200
+    per_device_train_batch_size: 2
+    per_device_eval_batch_size: 2
+    bf16: true
+    bf16_full_eval: true
+    evaluation_strategy: "steps"
+    eval_steps: 920
+    logging_strategy: "steps"
+    logging_steps: 10
+    save_strategy: "epoch"
+    save_steps: 1
+    learning_rate:
+      type: categorical
+      vals:
+        - 1e-7
+        - 5e-7
+        - 5e-8
+    gradient_accumulation_steps: 8
+    gradient_checkpointing: true
+    deepspeed: "ds_configs/ds_config_stage_2.json"
+    warmup_ratio: 0.1
+    lr_scheduler_type: "cosine"
+    optim: "adamw_torch"

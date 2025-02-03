@@ -1,0 +1,43 @@
+bind_mounts:
+  - container_path: /pfss/mlde/mlde_ext
+    host_path: /pfss/mlde/mlde_ext
+    propagation: rprivate
+    read_only: false
+  - container_path: /etc/hosts
+    host_path: /etc/hosts
+    propagation: rprivate
+    read_only: true
+  - container_path: /pfss/mlde/workspaces/mlde_wsp_P_AvemioAG
+    host_path: /pfss/mlde/workspaces/mlde_wsp_P_AvemioAG
+    propagation: rprivate
+    read_only: false
+debug: false
+description: marcel_test6
+entrypoint: null
+environment:
+  add_capabilities:
+    - IPC_LOCK
+  drop_capabilities: null
+  environment_variables: {}
+  force_pull_image: false
+  image:
+    cpu: determinedai/environments:py-3.9-pytorch-1.12-tf-2.11-cpu-079eb6d
+    cuda: determinedai/environments:cuda-11.3-pytorch-1.12-tf-2.11-gpu-079eb6d
+    rocm: determinedai/environments:rocm-5.0-pytorch-1.10-tf-2.7-rocm-622d512
+  pod_spec: null
+  ports: null
+  proxy_ports: null
+idle_timeout: null
+notebook_idle_type: kernels_or_terminals
+pbs: {}
+resources:
+  devices:
+    - container_path: /dev/infiniband/
+      host_path: /dev/infiniband/
+      mode: mrw
+  is_single_node: null
+  resource_pool: 42_Compute
+  slots: 1
+  weight: 1
+slurm: {}
+work_dir: null
