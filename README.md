@@ -332,13 +332,12 @@ Run the test suite using the following command:
 
 ##  License
 
-This project is protected under the [SELECT-A-LICENSE](https://choosealicense.com/licenses) License. For more details, refer to the [LICENSE](https://choosealicense.com/licenses/) file.
+This project is protected under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0) License.
 
 ---
 
 ##  Acknowledgments
 
-- List any resources, contributors, inspiration, etc. here.
+--- Contributors: Marcel Rosiak, Soumya Paul, Siavash Mollaebrahim, Zain Ul Haq
 
----
 
